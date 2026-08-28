@@ -1,0 +1,7 @@
+streamlit==1.62.0
+faster-whisper==1.2.1
+python-dotenv==1.2.3
+pydantic==2.13.5
+supabase==2.19.0
+requests==2.34.2
+ollama==0.4.7

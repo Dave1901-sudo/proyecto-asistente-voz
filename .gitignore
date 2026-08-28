@@ -1,0 +1,38 @@
+# Entorno virtual
+venv/
+.env
+
+# Python
+__pycache__/
+*.py[cod]
+*.so
+.pytest_cache/
+.coverage
+htmlcov/
+
+# Modelos Whisper (se descargan automáticamente)
+*.bin
+*.pt
+
+# Archivos temporales de audio
+*.wav
+*.mp3
+*.m4a
+*.ogg
+*.tmp
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Logs
+*.log
+
+# n8n
+n8n/.n8n/
