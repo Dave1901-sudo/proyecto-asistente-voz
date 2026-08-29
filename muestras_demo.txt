@@ -1,0 +1,50 @@
+MUESTRAS DE CONSULTAS PARA PRUEBA Y DEMO
+==========================================
+Asistente de Voz para Atencion al Cliente - UTP
+
+Estas frases sirven para probar la clasificacion de la aplicacion.
+Se pueden grabar como audio o usarse como referencia para generar audios de prueba.
+
+Las 4 categorias son: consulta_general, reclamo, soporte_tecnico, ventas.
+
+
+CATEGORIA: RECLAMO
+------------------
+1. Mi pedido llego roto, esto es inaceptable, quiero una solucion ya
+2. Llevo una semana esperando mi paquete y nadie me responde, quiero hablar con un supervisor
+3. Me cobraron dos veces por la misma compra, esto es un robo
+4. El producto que recibi no funciona, quiero mi dinero de vuelta
+5. Estoy muy molesto, mi factura tiene un error y nadie me ayuda
+
+
+CATEGORIA: VENTAS
+-----------------
+1. Quiero contratar el plan premium para mi equipo de 10 personas, cuanto cuesta
+2. Me interesa comprar el paquete anual, tienen algun descuento
+3. Cual es el precio del servicio basico y que incluye
+4. Necesito una cotizacion para renovar mi contrato
+5. Quiero hacer un pedido grande, pueden darme un precio especial
+
+
+CATEGORIA: SOPORTE TECNICO
+--------------------------
+1. La aplicacion me da error 500 al intentar pagar, no puedo completar la compra
+2. No puedo iniciar sesion en mi cuenta, dice contrasena incorrecta
+3. La app se cierra sola cada vez que la abro en mi celular
+4. El sistema no me deja subir el archivo, me sale un mensaje de error
+5. Mi cuenta quedo bloqueada y no se que hacer
+
+
+CATEGORIA: CONSULTA GENERAL
+---------------------------
+1. Hola, quisiera saber el horario de atencion de su oficina central
+2. Donde queda su tienda principal y como llego
+3. Cuales son los metodos de pago disponibles
+4. Quisiera saber si hacen envios a mi provincia
+5. Pueden darme mas informacion sobre sus servicios
+
+
+NOTA
+----
+El modelo clasifica por significado, no por palabras exactas.
+Si una frase es ambigua, puede caer en consulta_general (fallback por diseno).
