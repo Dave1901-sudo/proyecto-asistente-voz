@@ -63,6 +63,18 @@ st.subheader("Resultados")
 if "transcripcion" in st.session_state:
     st.text_area("Transcripción", st.session_state["transcripcion"], height=150)
 
+    if st.button("Copiar transcripción"):
+        texto = st.session_state["transcripcion"].replace("'", "\\'")
+        st.components.v1.html(
+            f"""
+            <script>
+            navigator.clipboard.writeText('{texto}');
+            </script>
+            """,
+            height=0,
+        )
+        st.toast("Transcripción copiada al portapapeles")
+
     if st.button("Clasificar y Generar Respuesta", type="secondary"):
         with st.spinner("Clasificando con LLM local..."):
             try:
@@ -92,6 +104,11 @@ if "transcripcion" in st.session_state:
 
         if "ultimo_guardado_id" in st.session_state:
             st.info(f"Última interacción guardada con ID: {st.session_state['ultimo_guardado_id']}")
+
+    if st.button("Limpiar todo"):
+        for key in ["transcripcion", "clasificacion", "ultimo_guardado_id"]:
+            st.session_state.pop(key, None)
+        st.rerun()
 else:
     st.info("Sube un audio y presiona \"Transcribir\" para comenzar")
 
