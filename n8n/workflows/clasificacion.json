@@ -1,0 +1,234 @@
+{
+  "name": "Clasificación Interacciones - Asistente Voz",
+  "nodes": [
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "interaccion-nueva",
+        "responseMode": "responseNode",
+        "options": {}
+      },
+      "id": "webhook-interaccion",
+      "name": "Webhook: Interacción Nueva",
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 1,
+      "position": [250, 300],
+      "webhookId": "interaccion-nueva"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "string": [
+            {
+              "value1": "={{ $json.categoria }}",
+              "operation": "equal",
+              "value2": "reclamo"
+            }
+          ]
+        }
+      },
+      "id": "switch-categoria",
+      "name": "Switch: Categoría",
+      "type": "n8n-nodes-base.switch",
+      "typeVersion": 1,
+      "position": [500, 300]
+    },
+    {
+      "parameters": {
+        "fromEmail": "sistema@asistente-voz.local",
+        "toEmail": "soporte@empresa.com",
+        "subject": "🔴 Nuevo Reclamo - ID: {{ $json.id }}",
+        "text": "Se ha registrado un nuevo reclamo:\n\nID: {{ $json.id }}\nFecha: {{ $json.fecha }}\nTranscripción: {{ $json.texto_transcrito }}\nCategoría: {{ $json.categoria }}\nRespuesta sugerida: {{ $json.respuesta_sugerida }}\n\n---\nSistema Asistente de Voz UTP",
+        "options": {}
+      },
+      "id": "email-reclamo",
+      "name": "Email: Reclamo Urgente",
+      "type": "n8n-nodes-base.sendEmail",
+      "typeVersion": 1,
+      "position": [750, 100],
+      "credentials": {
+        "smtp": "smtp-credenciales"
+      }
+    },
+    {
+      "parameters": {
+        "fromEmail": "sistema@asistente-voz.local",
+        "toEmail": "ventas@empresa.com",
+        "subject": "🟢 Nueva Oportunidad de Venta - ID: {{ $json.id }}",
+        "text": "Nueva consulta de ventas registrada:\n\nID: {{ $json.id }}\nFecha: {{ $json.fecha }}\nTranscripción: {{ $json.texto_transcrito }}\nRespuesta sugerida: {{ $json.respuesta_sugerida }}\n\n---\nSistema Asistente de Voz UTP",
+        "options": {}
+      },
+      "id": "email-ventas",
+      "name": "Email: Ventas",
+      "type": "n8n-nodes-base.sendEmail",
+      "typeVersion": 1,
+      "position": [750, 300],
+      "credentials": {
+        "smtp": "smtp-credenciales"
+      }
+    },
+    {
+      "parameters": {
+        "fromEmail": "sistema@asistente-voz.local",
+        "toEmail": "soporte-tecnico@empresa.com",
+        "subject": "🟡 Soporte Técnico - ID: {{ $json.id }}",
+        "text": "Nueva solicitud de soporte técnico:\n\nID: {{ $json.id }}\nFecha: {{ $json.fecha }}\nTranscripción: {{ $json.texto_transcrito }}\nRespuesta sugerida: {{ $json.respuesta_sugerida }}\n\n---\nSistema Asistente de Voz UTP",
+        "options": {}
+      },
+      "id": "email-soporte",
+      "name": "Email: Soporte Técnico",
+      "type": "n8n-nodes-base.sendEmail",
+      "typeVersion": 1,
+      "position": [750, 500],
+      "credentials": {
+        "smtp": "smtp-credenciales"
+      }
+    },
+    {
+      "parameters": {
+        "fromEmail": "sistema@asistente-voz.local",
+        "toEmail": "info@empresa.com",
+        "subject": "🔵 Consulta General - ID: {{ $json.id }}",
+        "text": "Nueva consulta general registrada:\n\nID: {{ $json.id }}\nFecha: {{ $json.fecha }}\nTranscripción: {{ $json.texto_transcrito }}\nRespuesta sugerida: {{ $json.respuesta_sugerida }}\n\n---\nSistema Asistente de Voz UTP",
+        "options": {}
+      },
+      "id": "email-consulta",
+      "name": "Email: Consulta General",
+      "type": "n8n-nodes-base.sendEmail",
+      "typeVersion": 1,
+      "position": [750, 700],
+      "credentials": {
+        "smtp": "smtp-credenciales"
+      }
+    },
+    {
+      "parameters": {
+        "channel": "#alertas-asistente-voz",
+        "text": "🔔 *Nueva interacción registrada*\n*ID:* {{ $json.id }}\n*Categoría:* {{ $json.categoria }}\n*Transcripción:* {{ $json.texto_transcrito[:100] }}...\n*Respuesta:* {{ $json.respuesta_sugerida[:100] }}...",
+        "options": {}
+      },
+      "id": "slack-notificacion",
+      "name": "Slack: Notificación General",
+      "type": "n8n-nodes-base.slack",
+      "typeVersion": 1,
+      "position": [1000, 300],
+      "credentials": {
+        "slackApi": "slack-credenciales"
+      }
+    },
+    {
+      "parameters": {
+        "respondWith": "json",
+        "options": {}
+      },
+      "id": "respuesta-webhook",
+      "name": "Respuesta Webhook",
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1,
+      "position": [1250, 300]
+    }
+  ],
+  "connections": {
+    "Webhook: Interacción Nueva": {
+      "main": [
+        [
+          {
+            "node": "Switch: Categoría",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Switch: Categoría": {
+      "main": [
+        [
+          {
+            "node": "Email: Reclamo Urgente",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Email: Ventas",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Email: Soporte Técnico",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Email: Consulta General",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Email: Reclamo Urgente": {
+      "main": [
+        [
+          {
+            "node": "Slack: Notificación General",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Email: Ventas": {
+      "main": [
+        [
+          {
+            "node": "Slack: Notificación General",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Email: Soporte Técnico": {
+      "main": [
+        [
+          {
+            "node": "Slack: Notificación General",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Email: Consulta General": {
+      "main": [
+        [
+          {
+            "node": "Slack: Notificación General",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Slack: Notificación General": {
+      "main": [
+        [
+          {
+            "node": "Respuesta Webhook",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {},
+  "id": "1"
+}

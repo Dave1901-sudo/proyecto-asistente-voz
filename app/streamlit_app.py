@@ -4,15 +4,16 @@ import os
 from pathlib import Path
 from app.services.whisper_service import transcribir_audio
 from app.services.llm_service import clasificar_y_responder
+from app.services.supabase_service import guardar_interaccion, obtener_interacciones
 from app.config.settings import ALLOWED_AUDIO_EXTENSIONS, MAX_AUDIO_DURATION_SECONDS
 
 st.set_page_config(page_title="Asistente de Voz", page_icon="🎙️", layout="wide")
 
 st.title("🎙️ Asistente de Voz para Atención al Cliente")
-st.caption("Sube o graba un audio → Transcripción → Clasificación + Respuesta")
+st.caption("Sube o graba un audio → Transcripción → Clasificación + Respuesta → Guardar en BD")
 
 with st.sidebar:
-    st.header("⚙️ Configuración")
+    st.header("Configuración")
     st.info(f"Modelo Whisper: `small` (local)")
     st.info(f"Modelo LLM: `llama3.2:3b` (Ollama local)")
     st.info(f"Duración máx: {MAX_AUDIO_DURATION_SECONDS}s")
@@ -23,7 +24,7 @@ st.divider()
 col1, col2 = st.columns([1, 1])
 
 with col1:
-    st.subheader("📤 Entrada de Audio")
+    st.subheader("Entrada de Audio")
     audio_file = st.file_uploader(
         "Subir archivo de audio",
         type=[ext[1:] for ext in ALLOWED_AUDIO_EXTENSIONS],
@@ -43,13 +44,13 @@ with col1:
             tmp.write(audio_bytes.read())
             audio_path = tmp.name
 
-    if audio_path and st.button("🔄 Transcribir", type="primary"):
+    if audio_path and st.button("Transcribir", type="primary"):
         with st.spinner("Transcribiendo con Whisper..."):
             try:
                 texto = transcribir_audio(audio_path)
                 st.session_state["transcripcion"] = texto
                 st.session_state.pop("clasificacion", None)
-                st.success("✅ Transcripción completada")
+                st.success("Transcripción completada")
             except Exception as e:
                 st.error(f"Error: {e}")
             finally:
@@ -58,17 +59,33 @@ with col1:
 
     if "transcripcion" in st.session_state:
         st.divider()
-        if st.button("🎯 Clasificar y Generar Respuesta", type="secondary"):
+        if st.button("Clasificar y Generar Respuesta", type="secondary"):
             with st.spinner("Clasificando con LLM local..."):
                 try:
                     resultado = clasificar_y_responder(st.session_state["transcripcion"])
                     st.session_state["clasificacion"] = resultado
-                    st.success("✅ Clasificación completada")
+                    st.success("Clasificación completada")
                 except Exception as e:
                     st.error(f"Error: {e}")
 
+    if "clasificacion" in st.session_state:
+        st.divider()
+        if st.button("Guardar en Base de Datos", type="primary"):
+            with st.spinner("Guardando en Supabase..."):
+                try:
+                    cl = st.session_state["clasificacion"]
+                    interaccion_id = guardar_interaccion(
+                        st.session_state["transcripcion"],
+                        cl["categoria"],
+                        cl["respuesta"]
+                    )
+                    st.session_state["ultimo_guardado_id"] = interaccion_id
+                    st.success(f"Guardado en BD (ID: {interaccion_id})")
+                except Exception as e:
+                    st.error(f"Error guardando: {e}")
+
 with col2:
-    st.subheader("📝 Resultados")
+    st.subheader("Resultados")
     if "transcripcion" in st.session_state:
         st.text_area("Transcripción", st.session_state["transcripcion"], height=150)
 
@@ -76,10 +93,30 @@ with col2:
         cl = st.session_state["clasificacion"]
         st.markdown(f"**Categoría:** `{cl['categoria']}`")
         st.text_area("Respuesta sugerida", cl["respuesta"], height=100)
+        
+        if "ultimo_guardado_id" in st.session_state:
+            st.success(f"Guardado en BD con ID: {st.session_state['ultimo_guardado_id']}")
     elif "transcripcion" in st.session_state:
         st.info("Presiona \"Clasificar y Generar Respuesta\" para analizar la transcripción")
     else:
         st.empty()
+
+    # Historial reciente
+    st.divider()
+    st.subheader("Historial Reciente")
+    if st.button("Actualizar historial"):
+        try:
+            historial = obtener_interacciones(limit=10)
+            if historial:
+                for item in historial:
+                    with st.expander(f"{item['fecha'][:19]} - {item['categoria']} (ID: {item['id']})"):
+                        st.text(f"Transcripción: {item['texto_transcrito'][:100]}...")
+                        st.text(f"Respuesta: {item['respuesta_sugerida'][:100]}...")
+                        st.text(f"Estado: {item['estado']}")
+            else:
+                st.info("No hay interacciones guardadas aún")
+        except Exception as e:
+            st.error(f"Error cargando historial: {e}")
 
 st.divider()
 st.caption("Asistente de Voz para Atención al Cliente — UTP")
