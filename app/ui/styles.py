@@ -190,6 +190,11 @@ header[data-testid="stHeader"] {
     padding: 1.75rem 1rem 2rem 1rem;
     margin-bottom: 1.25rem;
     position: relative;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    box-sizing: border-box;
 }
 
 /* Resplandor ambiental detrás del hero */
