@@ -34,6 +34,10 @@ CUSTOM_CSS = """
     --cat-consulta-bg: rgba(59, 130, 246, 0.15);
     --cat-consulta-text: #60a5fa;
     --cat-consulta-border: rgba(59, 130, 246, 0.35);
+
+    --glow: 0 0 18px rgba(123, 192, 144, 0.18);
+    --glow-strong: 0 0 28px rgba(123, 192, 144, 0.28);
+    --radius-card: 18px;
 }
 
 /* =========================================================
@@ -183,24 +187,47 @@ header[data-testid="stHeader"] {
    ========================================================= */
 .sapo-hero {
     text-align: center;
-    padding: 1.5rem 1rem 1.75rem 1rem;
+    padding: 1.75rem 1rem 2rem 1rem;
     margin-bottom: 1.25rem;
+    position: relative;
 }
+
+/* Resplandor ambiental detrás del hero */
+.sapo-hero::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 50%;
+    transform: translateX(-50%);
+    width: 600px;
+    height: 180px;
+    background: radial-gradient(ellipse at center top, rgba(57, 123, 83, 0.18) 0%, transparent 70%);
+    pointer-events: none;
+    z-index: 0;
+}
+
+.sapo-hero > * { position: relative; z-index: 1; }
 
 .eyebrow {
     display: inline-flex;
     align-items: center;
     gap: 8px;
-    padding: 6px 14px;
-    border: 1px solid var(--line);
+    padding: 6px 16px;
+    border: 1px solid rgba(123, 192, 144, 0.22);
     border-radius: 99px;
     color: var(--accent);
-    background: color-mix(in srgb, var(--accent-soft) 55%, transparent);
-    font-size: 0.74rem;
+    background: rgba(33, 60, 42, 0.6);
+    font-size: 0.73rem;
     font-weight: 700;
     text-transform: uppercase;
-    letter-spacing: 0.1em;
-    margin-bottom: 0.85rem;
+    letter-spacing: 0.12em;
+    margin-bottom: 0.9rem;
+    backdrop-filter: blur(8px);
+    transition: border-color 0.3s ease, box-shadow 0.3s ease;
+}
+
+.eyebrow:hover {
+    border-color: rgba(123, 192, 144, 0.45);
+    box-shadow: var(--glow);
 }
 
 .status-dot {
@@ -208,34 +235,39 @@ header[data-testid="stHeader"] {
     height: 7px;
     border-radius: 50%;
     background: #5ac77b;
-    box-shadow: 0 0 0 4px rgba(90, 199, 123, 0.22);
+    box-shadow: 0 0 0 3px rgba(90, 199, 123, 0.2), 0 0 10px rgba(90, 199, 123, 0.4);
     animation: statusPulse 2s infinite ease-in-out;
 }
 
 @keyframes statusPulse {
-    0%, 100% { opacity: 1; transform: scale(1); }
-    50% { opacity: 0.35; transform: scale(0.85); }
+    0%, 100% { opacity: 1; transform: scale(1); box-shadow: 0 0 0 3px rgba(90, 199, 123, 0.2), 0 0 10px rgba(90, 199, 123, 0.4); }
+    50% { opacity: 0.5; transform: scale(0.82); box-shadow: 0 0 0 5px rgba(90, 199, 123, 0.08); }
 }
 
 .hero-title {
-    font-size: clamp(2rem, 3.8vw, 2.75rem) !important;
+    font-size: clamp(2rem, 3.8vw, 2.9rem) !important;
     font-weight: 800 !important;
-    letter-spacing: -0.05em !important;
+    letter-spacing: -0.055em !important;
     color: var(--text) !important;
-    margin: 0 0 0.5rem 0 !important;
-    line-height: 1.15 !important;
+    margin: 0 0 0.6rem 0 !important;
+    line-height: 1.1 !important;
 }
 
 .hero-title span {
-    color: var(--accent);
+    background: linear-gradient(135deg, #7bc090 0%, #a8dbb8 50%, #7bc090 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    filter: drop-shadow(0 0 14px rgba(123, 192, 144, 0.35));
 }
 
 .hero-intro {
-    font-size: 0.95rem;
+    font-size: 0.96rem;
     color: var(--muted);
-    max-width: 580px;
+    max-width: 520px;
     margin: 0 auto;
-    line-height: 1.55;
+    line-height: 1.6;
+    letter-spacing: 0.01em;
 }
 
 .hero-intro-centered {
@@ -258,37 +290,60 @@ header[data-testid="stHeader"] {
    ========================================================= */
 hr, [data-testid="stDivider"], .section-divider {
     border: none !important;
-    border-top: 1px solid var(--line) !important;
-    margin: 2.25rem 0 !important;
-    opacity: 0.9 !important;
+    height: 1px !important;
+    background: linear-gradient(
+        to right,
+        transparent 0%,
+        var(--line) 20%,
+        rgba(123, 192, 144, 0.18) 50%,
+        var(--line) 80%,
+        transparent 100%
+    ) !important;
+    margin: 2.5rem 0 !important;
+    opacity: 1 !important;
 }
 
 /* =========================================================
    5. ENCABEZADOS DE ETAPA Y KICKERS
    ========================================================= */
 .section-kicker {
-    display: block;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
     color: var(--accent);
-    font-size: 0.72rem;
+    font-size: 0.7rem;
     font-weight: 800;
-    letter-spacing: 0.16em;
+    letter-spacing: 0.18em;
     text-transform: uppercase;
-    margin-bottom: 4px;
+    margin-bottom: 5px;
+    opacity: 0.85;
+}
+
+.section-kicker::before {
+    content: '';
+    display: inline-block;
+    width: 5px;
+    height: 5px;
+    border-radius: 50%;
+    background: var(--accent);
+    box-shadow: 0 0 6px rgba(123, 192, 144, 0.5);
+    flex-shrink: 0;
 }
 
 .section-title-sapo {
-    font-size: 1.35rem;
+    font-size: 1.4rem;
     font-weight: 800;
-    letter-spacing: -0.04em;
+    letter-spacing: -0.045em;
     color: var(--text);
-    margin: 0 0 0.4rem 0;
+    margin: 0 0 0.35rem 0;
 }
 
 .section-desc-sapo {
-    font-size: 0.88rem;
+    font-size: 0.87rem;
     color: var(--muted);
-    margin: 0 0 1.25rem 0;
-    line-height: 1.5;
+    margin: 0 0 1.3rem 0;
+    line-height: 1.55;
+    max-width: 620px;
 }
 
 /* =========================================================
@@ -632,6 +687,88 @@ div[data-testid="stButton"] > button[kind="secondary"]:hover {
     font-size: 0.84rem;
     color: var(--muted);
     margin: 0;
+}
+
+/* =========================================================
+   12. RETOQUES DE POLISH
+   ========================================================= */
+
+/* Telemetry card: micro-glow verde al hover */
+.telemetry-card:hover {
+    border-color: rgba(123, 192, 144, 0.35) !important;
+    box-shadow: var(--glow) !important;
+    transform: translateY(-2px) !important;
+}
+
+/* Expander historial: left-border accent + glow al hover */
+[data-testid="stExpander"]:hover {
+    border-color: rgba(123, 192, 144, 0.3) !important;
+    border-left-color: rgba(123, 192, 144, 0.55) !important;
+    border-left-width: 2px !important;
+    box-shadow: var(--glow), 0 6px 20px rgba(0, 0, 0, 0.22) !important;
+    transform: translateY(-1px) !important;
+}
+
+/* Textarea: transición más suave + ligero glow en focus */
+.stTextArea textarea {
+    transition: border-color 0.25s ease, box-shadow 0.25s ease !important;
+    font-family: 'DM Sans', sans-serif !important;
+}
+
+.stTextArea textarea:focus {
+    border-color: var(--accent) !important;
+    box-shadow: 0 0 0 2px rgba(123, 192, 144, 0.18), 0 0 14px rgba(123, 192, 144, 0.1) !important;
+}
+
+/* Scrollbar personalizada (Chrome/Edge/Safari) */
+::-webkit-scrollbar {
+    width: 6px;
+    height: 6px;
+}
+::-webkit-scrollbar-track {
+    background: var(--bg-soft);
+    border-radius: 3px;
+}
+::-webkit-scrollbar-thumb {
+    background: var(--accent-strong);
+    border-radius: 3px;
+    opacity: 0.7;
+}
+::-webkit-scrollbar-thumb:hover {
+    background: var(--accent);
+}
+
+/* Toast de Streamlit: fondo más integrado */
+[data-testid="stToast"] {
+    background: var(--surface-solid) !important;
+    border: 1px solid rgba(123, 192, 144, 0.25) !important;
+    border-radius: 14px !important;
+    box-shadow: var(--shadow), var(--glow) !important;
+    backdrop-filter: blur(16px) !important;
+}
+
+/* Botones secundarios: micro-glow en hover */
+button[data-testid="stBaseButton-secondary"]:hover,
+div[data-testid="stButton"] > button[kind="secondary"]:hover {
+    box-shadow: var(--glow) !important;
+}
+
+/* Tabs: tab activo con glow sutil */
+[data-testid="stTabs"] button[role="tab"][aria-selected="true"] {
+    box-shadow: 0 4px 14px rgba(0, 0, 0, 0.2), var(--glow) !important;
+}
+
+/* Spinner del expander (▶ ▼) */
+[data-testid="stExpander"] summary {
+    font-weight: 600 !important;
+    font-size: 0.88rem !important;
+    color: var(--text) !important;
+    padding: 0.65rem 0.75rem !important;
+    transition: color 0.2s ease !important;
+}
+
+[data-testid="stExpander"] summary:hover {
+    color: var(--accent) !important;
 }
 </style>
 """

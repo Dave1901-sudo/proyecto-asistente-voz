@@ -103,25 +103,182 @@ def render_section_header(step_num: int, title: str, description: str):
 
 
 def render_flowing_waveform():
-    """Renderiza la onda acústica fluida estilo SAPO AI - versión refinada."""
+    """Renderiza la onda acústica con animación CSS (fluye aunque Python esté ocupado)."""
     st.markdown(
         """
-        <div class="signal-visual-sapo-refined">
-            <svg class="waveform-svg-refined" viewBox="0 0 800 48" preserveAspectRatio="none">
+        <style>
+        @keyframes waveShift {
+            0%   { stroke-dashoffset: 0; }
+            100% { stroke-dashoffset: -800; }
+        }
+        @keyframes wavePulse {
+            0%, 100% { opacity: 0.7; }
+            50%       { opacity: 1; }
+        }
+        .signal-visual-sapo {
+            height: 56px;
+            margin: 1rem 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 14px;
+            background: linear-gradient(145deg, rgba(33, 60, 42, 0.55), rgba(23, 34, 28, 0.7));
+            border: 1px solid var(--line);
+            overflow: hidden;
+            padding: 0 16px;
+        }
+        .waveform-svg {
+            width: 100%;
+            height: 100%;
+            overflow: visible;
+        }
+        .wave-path-main {
+            fill: none;
+            stroke: var(--accent);
+            stroke-width: 2.2;
+            stroke-dasharray: 800;
+            stroke-linecap: round;
+            animation: waveShift 3s linear infinite, wavePulse 2s ease-in-out infinite;
+            filter: drop-shadow(0 0 6px rgba(123, 192, 144, 0.5));
+        }
+        .wave-path-shadow {
+            fill: none;
+            stroke: var(--accent-strong);
+            stroke-width: 1.4;
+            stroke-dasharray: 800;
+            stroke-dashoffset: 100;
+            stroke-linecap: round;
+            opacity: 0.45;
+            animation: waveShift 4.5s linear infinite reverse;
+        }
+        </style>
+        <div class="signal-visual-sapo">
+            <svg class="waveform-svg" viewBox="0 0 800 56" preserveAspectRatio="none">
                 <defs>
-                    <linearGradient id="waveGradient" x1="0%" y1="0%" x2="100%" y2="0%">
-                        <stop offset="0%" stop-color="var(--accent)" stop-opacity="0.3"/>
-                        <stop offset="50%" stop-color="var(--accent)" stop-opacity="0.8"/>
-                        <stop offset="100%" stop-color="var(--accent)" stop-opacity="0.3"/>
+                    <linearGradient id="waveGrad" x1="0%" y1="0%" x2="100%" y2="0%">
+                        <stop offset="0%"   stop-color="var(--accent)" stop-opacity="0.2"/>
+                        <stop offset="50%"  stop-color="var(--accent)" stop-opacity="1"/>
+                        <stop offset="100%" stop-color="var(--accent)" stop-opacity="0.2"/>
                     </linearGradient>
                 </defs>
-                <path d="M0,24 Q80,8 160,24 T320,24 T480,24 T640,24 T800,24" fill="none" stroke="url(#waveGradient)" stroke-width="2" stroke-linecap="round"/>
-                <path d="M0,24 Q80,36 160,24 T320,24 T480,24 T640,24 T800,24" fill="none" stroke="var(--accent-strong)" stroke-width="1.2" opacity="0.4"/>
+                <path class="wave-path-main"
+                    d="M0,28 Q50,8 100,28 T200,28 T300,28 T400,28 T500,28 T600,28 T700,28 T800,28"
+                    stroke="url(#waveGrad)"/>
+                <path class="wave-path-shadow"
+                    d="M0,28 Q50,42 100,28 T200,28 T300,28 T400,28 T500,28 T600,28 T700,28 T800,28"/>
             </svg>
         </div>
         """,
         unsafe_allow_html=True,
     )
+
+
+def render_processing_waveform():
+    """Visualizador animado tipo ecualizador durante el procesamiento con Whisper.
+    Usa CSS puro para animar → funciona aunque Python esté bloqueado.
+    """
+    st.markdown(
+        """
+        <style>
+        @keyframes equalize {
+            0%   { transform: scaleY(0.15); }
+            100% { transform: scaleY(1); }
+        }
+        .proc-container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 12px;
+            padding: 18px 0 14px 0;
+        }
+        .proc-eq {
+            display: flex;
+            align-items: flex-end;
+            justify-content: center;
+            gap: 5px;
+            height: 52px;
+        }
+        .proc-bar {
+            width: 5px;
+            height: 44px;
+            border-radius: 3px;
+            background: var(--accent);
+            transform-origin: bottom;
+            animation: equalize 0.7s ease-in-out infinite alternate;
+            box-shadow: 0 0 8px rgba(123, 192, 144, 0.4);
+        }
+        .proc-bar:nth-child(1)  { animation-delay: 0.00s; height: 24px; }
+        .proc-bar:nth-child(2)  { animation-delay: 0.07s; height: 38px; }
+        .proc-bar:nth-child(3)  { animation-delay: 0.14s; height: 44px; background: color-mix(in srgb, var(--accent) 90%, #fff 10%); }
+        .proc-bar:nth-child(4)  { animation-delay: 0.21s; height: 32px; }
+        .proc-bar:nth-child(5)  { animation-delay: 0.28s; height: 44px; background: color-mix(in srgb, var(--accent) 90%, #fff 10%); }
+        .proc-bar:nth-child(6)  { animation-delay: 0.35s; height: 38px; }
+        .proc-bar:nth-child(7)  { animation-delay: 0.42s; height: 44px; background: color-mix(in srgb, var(--accent) 90%, #fff 10%); }
+        .proc-bar:nth-child(8)  { animation-delay: 0.49s; height: 28px; }
+        .proc-bar:nth-child(9)  { animation-delay: 0.56s; height: 44px; }
+        .proc-bar:nth-child(10) { animation-delay: 0.63s; height: 36px; }
+        .proc-bar:nth-child(11) { animation-delay: 0.70s; height: 44px; background: color-mix(in srgb, var(--accent) 90%, #fff 10%); }
+        .proc-bar:nth-child(12) { animation-delay: 0.77s; height: 20px; }
+        .proc-bar:nth-child(13) { animation-delay: 0.56s; height: 38px; }
+        .proc-bar:nth-child(14) { animation-delay: 0.35s; height: 44px; }
+        .proc-bar:nth-child(15) { animation-delay: 0.14s; height: 28px; }
+        .proc-label {
+            font-family: 'Manrope', sans-serif;
+            font-size: 0.82rem;
+            font-weight: 600;
+            letter-spacing: 0.06em;
+            color: var(--accent);
+            margin: 0;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        @keyframes dotBlink {
+            0%, 100% { opacity: 0.2; }
+            50%       { opacity: 1; }
+        }
+        .proc-dot {
+            display: inline-block;
+            width: 5px;
+            height: 5px;
+            border-radius: 50%;
+            background: var(--accent);
+            animation: dotBlink 1.2s ease-in-out infinite;
+        }
+        .proc-dot:nth-child(2) { animation-delay: 0.2s; }
+        .proc-dot:nth-child(3) { animation-delay: 0.4s; }
+        </style>
+
+        <div class="proc-container">
+            <div class="proc-eq">
+                <div class="proc-bar"></div>
+                <div class="proc-bar"></div>
+                <div class="proc-bar"></div>
+                <div class="proc-bar"></div>
+                <div class="proc-bar"></div>
+                <div class="proc-bar"></div>
+                <div class="proc-bar"></div>
+                <div class="proc-bar"></div>
+                <div class="proc-bar"></div>
+                <div class="proc-bar"></div>
+                <div class="proc-bar"></div>
+                <div class="proc-bar"></div>
+                <div class="proc-bar"></div>
+                <div class="proc-bar"></div>
+                <div class="proc-bar"></div>
+            </div>
+            <p class="proc-label">
+                Procesando señal acústica con Whisper
+                <span class="proc-dot"></span>
+                <span class="proc-dot"></span>
+                <span class="proc-dot"></span>
+            </p>
+        </div>
+        """,
+        unsafe_allow_html=True,
+    )
+
+
 
 
 def render_category_badge(categoria: str):

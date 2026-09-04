@@ -20,6 +20,7 @@ from app.ui.components import (
     render_category_badge,
     render_empty_state,
     render_flowing_waveform,
+    render_processing_waveform,
     render_navbar,
     render_response_card,
     render_section_header,
@@ -76,35 +77,46 @@ with tab_record:
         label_visibility="collapsed",
     )
 
-# Procesamiento de archivo temporal
+# Procesamiento de archivo temporal + transcripción automática
 audio_path = None
+audio_key = None
+
 if audio_file is not None:
     suffix = Path(audio_file.name).suffix
+    # Usar nombre + tamaño como clave para detectar si el audio cambió
+    audio_key = f"file::{audio_file.name}::{audio_file.size}"
     with tempfile.NamedTemporaryFile(delete=False, suffix=suffix) as tmp:
         tmp.write(audio_file.read())
         audio_path = tmp.name
 elif audio_bytes is not None:
+    audio_key = f"mic::{len(audio_bytes.read())}"
+    audio_bytes.seek(0)  # Rebobinar tras leer para obtener el tamaño
     with tempfile.NamedTemporaryFile(delete=False, suffix=".wav") as tmp:
         tmp.write(audio_bytes.read())
         audio_path = tmp.name
 
-if audio_path:
-    render_flowing_waveform()
-    col_transcribe, _ = st.columns([2, 3])
-    with col_transcribe:
-        if st.button("Transcribir y Analizar Audio", type="primary", use_container_width=True):
-            with st.spinner("Procesando señal acústica con Whisper local..."):
-                try:
-                    texto = transcribir_audio(audio_path)
-                    st.session_state["transcripcion"] = texto
-                    st.session_state.pop("clasificacion", None)
-                    st.toast("Transcripción acústica completada", icon="✅")
-                    st.rerun()
-                except Exception as e:
-                    st.error(f"Error en la transcripción: {e}")
-                finally:
-                    if os.path.exists(audio_path):
-                        os.unlink(audio_path)
+if audio_path and audio_key:
+    # Si es un audio nuevo (distinto al último transcrito), transcribir automáticamente
+    if st.session_state.get("ultimo_audio_key") != audio_key:
+        # Mostrar el ecualizador animado (CSS puro → anima aunque Python esté bloqueado)
+        render_processing_waveform()
+        try:
+            texto = transcribir_audio(audio_path)
+            st.session_state["transcripcion"] = texto
+            st.session_state["ultimo_audio_key"] = audio_key
+            st.session_state.pop("clasificacion", None)
+            st.toast("Transcripción acústica completada ✅")
+            st.rerun()
+        except Exception as e:
+            st.error(f"Error en la transcripción: {e}")
+        finally:
+            if os.path.exists(audio_path):
+                os.unlink(audio_path)
+    else:
+        # Audio ya transcrito: mostrar solo la onda visual animada
+        render_flowing_waveform()
+        if os.path.exists(audio_path):
+            os.unlink(audio_path)
 
 # Separación elegante por línea entre etapas
 st.divider()
