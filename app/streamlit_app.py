@@ -15,6 +15,7 @@ from app.services.supabase_service import (
     guardar_interaccion,
     obtener_interacciones,
 )
+from app.services.tts_service import sintetizar_a_bytes
 from app.services.whisper_service import transcribir_audio
 from app.ui.components import (
     render_category_badge,
@@ -166,6 +167,15 @@ if "transcripcion" in st.session_state and st.session_state["transcripcion"]:
         cl = st.session_state["clasificacion"]
         render_category_badge(cl["categoria"])
         render_response_card(cl["respuesta"])
+
+        if st.button("🔊 Escuchar respuesta", use_container_width=True):
+            with st.spinner("Generando audio..."):
+                try:
+                    audio_bytes = sintetizar_a_bytes(cl["respuesta"])
+                    st.audio(audio_bytes, format="audio/wav")
+                    st.toast("¡Audio generado!")
+                except Exception as e:
+                    st.error(f"Error generando audio: {e}")
 
         col_save, col_clear = st.columns([3, 1])
 
