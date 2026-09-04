@@ -5,6 +5,7 @@ from pathlib import Path
 from app.services.whisper_service import transcribir_audio
 from app.services.llm_service import clasificar_y_responder
 from app.services.supabase_service import guardar_interaccion, obtener_interacciones
+from app.services.tts_service import sintetizar_a_bytes
 from app.config.settings import ALLOWED_AUDIO_EXTENSIONS, MAX_AUDIO_DURATION_SECONDS
 
 st.set_page_config(page_title="Asistente de Voz", page_icon="🎙️", layout="wide")
@@ -104,6 +105,15 @@ if "transcripcion" in st.session_state:
 
         if "ultimo_guardado_id" in st.session_state:
             st.info(f"Última interacción guardada con ID: {st.session_state['ultimo_guardado_id']}")
+
+        if st.button("Escuchar respuesta", type="secondary"):
+            with st.spinner("Generando audio..."):
+                try:
+                    audio_bytes = sintetizar_a_bytes(cl["respuesta"])
+                    st.audio(audio_bytes, format="audio/wav")
+                    st.toast("¡Audio generado!")
+                except Exception as e:
+                    st.error(f"Error generando audio: {e}")
 
     if st.button("Limpiar todo"):
         for key in ["transcripcion", "clasificacion", "ultimo_guardado_id"]:

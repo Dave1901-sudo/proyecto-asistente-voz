@@ -5,5 +5,4 @@ pydantic==2.13.5
 supabase==2.18.0
 requests==2.34.2
 ollama==0.4.7
-flake8==7.1.1
-pytest==8.3.3
+gTTS==2.5.1
