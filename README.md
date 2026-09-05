@@ -1,16 +1,16 @@
 # Asistente de Voz para Atención al Cliente
 
-Proyecto final — Herramientas de Desarrollo Profesional TIC
+Proyecto para el curso: Herramientas de Desarrollo Profesional TIC
 Universidad Tecnológica del Perú (UTP)
 
-Sistema que recibe consultas de clientes en formato de audio, las transcribe, clasifica, genera una respuesta sugerida y dispara acciones automáticas. Utiliza modelos de IA locales gratuitos.
+Sistema que recibe consultas de clientes en formato de audio, las transcribe, clasifica, genera una respuesta sugerida y dispara acciones automáticas. Utiliza modelos de IA locales.
 
 ---
 
 ## Funcionalidad
 
 1. El cliente sube o graba un audio de consulta.
-2. Whisper transcribe el audio a texto (local).
+2. Whisper transcribe el audio a texto.
 3. Ollama clasifica la consulta en una categoría y genera una respuesta sugerida.
 4. La interacción se guarda en la base de datos.
 5. Se dispara una acción automática en n8n según la categoría.
