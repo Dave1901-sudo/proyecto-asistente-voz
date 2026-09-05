@@ -1,4 +1,4 @@
-"""Componentes visuales de alta fidelidad inspirados en la interfaz de SAPO AI."""
+"""Componentes visuales de alta fidelidad"""
 import html
 import streamlit as st
 
@@ -14,7 +14,7 @@ SVG_DATABASE = """<svg width="20" height="20" viewBox="0 0 24 24" fill="none" st
 
 
 def render_navbar():
-    """Renderiza el Hero Header con estilo SAPO AI."""
+    """Renderiza el Hero Header"""
     st.markdown(
         """
         <div class="sapo-hero">
@@ -33,7 +33,7 @@ def render_navbar():
 
 
 def render_sidebar_telemetry(whisper_model: str, ollama_model: str, max_duration: int, formats: list):
-    """Renderiza el panel de telemetría lateral con diseño SAPO AI."""
+    """Renderiza el panel de telemetría lateral"""
     formatos_str = ", ".join(sorted(formats))
 
     st.sidebar.markdown(
@@ -282,7 +282,7 @@ def render_processing_waveform():
 
 
 def render_category_badge(categoria: str):
-    """Renderiza el encabezado del resultado de clasificación al estilo SAPO AI."""
+    """Renderiza el encabezado del resultado de clasificación."""
     cat_normalizada = categoria.strip().lower()
     etiquetas = {
         "reclamo": ("Reclamo Registrado", "🚨", "#ef4444"),
@@ -328,7 +328,7 @@ def render_category_badge(categoria: str):
 
 
 def render_response_card(respuesta: str):
-    """Renderiza la respuesta sugerida al estilo confidence-block de SAPO AI."""
+    """Renderiza la respuesta sugerida."""
     st.markdown(
         f"""
         <div class="confidence-response-box">
@@ -341,7 +341,7 @@ def render_response_card(respuesta: str):
 
 
 def render_empty_state(title: str, description: str, state_type: str = "audio"):
-    """Renderiza un estado vacío limpio y elegante estilo SAPO AI."""
+    """Renderiza un estado vacío limpio y elegante."""
     svg_icon = SVG_MIC if state_type == "audio" else SVG_DATABASE
     st.markdown(
         f"""

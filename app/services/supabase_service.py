@@ -20,7 +20,7 @@ def _disparar_n8n(interaccion_id: str, transcripcion: str, categoria: str, respu
     try:
         payload = {
             "id": interaccion_id,
-            "fecha": None,  # n8n puede usar timestamp actual
+            "fecha": None,
             "texto_transcrito": transcripcion,
             "categoria": categoria,
             "respuesta_sugerida": respuesta,
@@ -29,7 +29,6 @@ def _disparar_n8n(interaccion_id: str, transcripcion: str, categoria: str, respu
         response = requests.post(N8N_WEBHOOK_URL, json=payload, timeout=5)
         return response.status_code in (200, 201)
     except Exception:
-        # No fallar el guardado si n8n no responde
         return False
 
 
@@ -51,7 +50,6 @@ def guardar_interaccion(transcripcion: str, categoria: str, respuesta: str) -> s
     
     if response.data and len(response.data) > 0:
         interaccion_id = str(response.data[0]["id"])
-        # Disparar n8n en background (no bloquear si falla)
         _disparar_n8n(interaccion_id, transcripcion, categoria, respuesta)
         return interaccion_id
     

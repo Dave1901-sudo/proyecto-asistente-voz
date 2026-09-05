@@ -36,7 +36,7 @@ st.set_page_config(
     layout="wide",
 )
 
-# Inyección del sistema de diseño SAPO AI (Forest / Obsidian)
+# Inyección del sistema
 st.markdown(CUSTOM_CSS, unsafe_allow_html=True)
 
 # Hero Header superior
@@ -97,9 +97,9 @@ elif audio_bytes is not None:
         audio_path = tmp.name
 
 if audio_path and audio_key:
-    # Si es un audio nuevo (distinto al último transcrito), transcribir automáticamente
+    # Si es un audio nuevo, transcribir automáticamente
     if st.session_state.get("ultimo_audio_key") != audio_key:
-        # Mostrar el ecualizador animado (CSS puro → anima aunque Python esté bloqueado)
+        # Mostrar el ecualizador animado
         render_processing_waveform()
         try:
             texto = transcribir_audio(audio_path)
@@ -168,7 +168,7 @@ if "transcripcion" in st.session_state and st.session_state["transcripcion"]:
         render_category_badge(cl["categoria"])
         render_response_card(cl["respuesta"])
 
-        if st.button("🔊 Escuchar respuesta", use_container_width=True):
+        if st.button("Escuchar respuesta", use_container_width=True):
             with st.spinner("Generando audio..."):
                 try:
                     audio_bytes = sintetizar_a_bytes(cl["respuesta"])

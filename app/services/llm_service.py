@@ -64,12 +64,10 @@ def _build_prompt(transcripcion: str) -> str:
 
 def _extract_json(text: str) -> dict:
     """Extrae el primer JSON válido del texto."""
-    # Intento directo
     try:
         return json.loads(text)
     except json.JSONDecodeError:
         pass
-    # Buscar bloque { ... }
     match = re.search(r"\{.*\}", text, re.DOTALL)
     if match:
         try:
@@ -96,7 +94,6 @@ def clasificar_y_responder(texto: str, max_reintentos: int = 2) -> dict:
             content = response["message"]["content"].strip()
             data = _extract_json(content)
 
-            # Validar categoría
             cat = data.get("categoria", "").strip().lower()
             if cat not in CATEGORIAS:
                 cat = "consulta_general"
@@ -115,5 +112,4 @@ def clasificar_y_responder(texto: str, max_reintentos: int = 2) -> dict:
                 }
             time.sleep(0.5 * (intento + 1))
 
-    # Fallback (no debería llegar)
     return {"categoria": "consulta_general", "respuesta": "Gracias por su mensaje. Un agente revisará su caso y le responderá a la brevedad."}
